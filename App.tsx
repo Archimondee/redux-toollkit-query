@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -13,6 +13,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -24,75 +25,75 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import MainScreenRedux from './src/Redux/screens';
+import MainReduxToolkit from './src/ReduxToolkit/screens';
+import MainReduxToolkitQuery from './src/ReduxToolkitQuery/screens';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const [selectedTab, setSelectedTab] = useState(0);
+  const Space = () => {
+    return <View style={{height: 20}} />;
+  };
+  const listTab = [
+    {
+      id: 0,
+      title: 'Redux',
+    },
+    {
+      id: 1,
+      title: 'RTK',
+    },
+    {
+      id: 2,
+      title: 'RTK Query',
+    },
+  ];
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const onChangeMenu = (id: number) => {
+    setSelectedTab(id);
+  };
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
+    <View style={{paddingTop: 60, backgroundColor: 'white'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+        {listTab.map((item, index) => {
+          return (
+            <TouchableOpacity
+              onPress={() => onChangeMenu(index)}
+              key={index}
+              style={{
+                borderBottomWidth: selectedTab === item.id ? 1 : 0,
+                paddingBottom: 5,
+                flex: 1,
+              }}>
+              <Text style={{textAlign: 'center'}}>{item.title}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      <Space />
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+        style={{
+          height: '100%',
+          backgroundColor: 'white',
+
+          paddingHorizontal: 25,
+        }}>
+        <Space />
+        {selectedTab === 0 && <MainScreenRedux />}
+        {selectedTab === 1 && <MainReduxToolkit />}
+        {selectedTab === 2 && <MainReduxToolkitQuery />}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
